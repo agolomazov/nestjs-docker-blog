@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  realworld-api:
+    build: ./nest-api
+    container_name: realworld-nest-api
+    ports:
+      - '3000:3000'
+    command: npm run start:dev
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./nest-api/src:/usr/src/app/src
+    restart: unless-stopped
+    networks:
+      - realworld-api-network
+
+networks:
+  realworld-api-network:
+    driver: bridge
