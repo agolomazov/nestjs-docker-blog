@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import { getDbConfig } from './configs/db.config';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { getDbConfig } from './configs/db.config';
       useFactory: getDbConfig,
     }),
     TagsModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
