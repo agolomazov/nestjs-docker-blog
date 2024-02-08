@@ -16,6 +16,11 @@ services:
       - realworld-api-network
     environment:
       - IS_TS_NODE=true
+      - DB_HOST=realworld-db
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=pass
+      - DB_NAME=mediumclone
     depends_on:
       - realworld-db
 
