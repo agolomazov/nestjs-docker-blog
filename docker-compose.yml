@@ -14,6 +14,44 @@ services:
     restart: unless-stopped
     networks:
       - realworld-api-network
+    environment:
+      - IS_TS_NODE=true
+      - DB_HOST=realworld-db
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=pass
+      - DB_NAME=mediumclone
+    depends_on:
+      - realworld-db
+
+  realworld-db:
+    image: postgres:alpine3.19
+    container_name: realworld-postgres-db
+    restart: unless-stopped
+    networks:
+      - realworld-api-network
+    volumes:
+      - ./pg_project:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_USER=user
+      - POSTGRES_DB=realworld
+
+  realworld-db-admin:
+    image: dpage/pgadmin4
+    container_name: realworld-db-admin
+    restart: unless-stopped
+    networks:
+      - realworld-api-network
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@realworld.ru
+      - PGADMIN_DEFAULT_PASSWORD=pass
+    ports:
+      - '82:80'
+    depends_on:
+      - realworld-db
 
 networks:
   realworld-api-network:
