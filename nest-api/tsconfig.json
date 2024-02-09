@@ -19,9 +19,6 @@
     "noFallthroughCasesInSwitch": false,
     "strictPropertyInitialization": false,
     "strict": true,
-    "paths": {
-      "@app/": ["./src/*"],
-    },
   },
   "watchOptions": {
     "watchFile": "dynamicPriorityPolling",
