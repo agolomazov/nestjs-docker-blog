@@ -13,6 +13,7 @@ import { SECRET_JWT } from '../configs/jwt.config';
 import { UserResponseInterface } from './types/user.response.interface';
 import { LoginUserDto } from './dto/login-user.dto';
 import { compare } from 'bcryptjs';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -48,6 +49,15 @@ export class UserService {
         id,
       },
     });
+  }
+
+  async updateUser(
+    userId: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserEntity> {
+    const user = await this.findById(userId);
+    Object.assign(user, updateUserDto);
+    return await this.userRepository.save(user);
   }
 
   async login(body: LoginUserDto): Promise<UserEntity> {
