@@ -1,11 +1,18 @@
 import { CreateUserDto } from './dto/create-user.dto';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserEntity } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
 import { SECRET_JWT } from '../configs/jwt.config';
 import { UserResponseInterface } from './types/user.response.interface';
+import { LoginUserDto } from './dto/login-user.dto';
+import { compare } from 'bcryptjs';
 
 @Injectable()
 export class UserService {
@@ -33,6 +40,39 @@ export class UserService {
     Object.assign(newUser, body);
 
     return await this.userRepository.save(newUser);
+  }
+
+  async login(body: LoginUserDto): Promise<UserEntity> {
+    const userByEmail = await this.userRepository.findOne({
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        username: true,
+        bio: true,
+        image: true,
+      },
+      where: {
+        email: body.email,
+      },
+    });
+
+    if (!userByEmail) {
+      throw new NotFoundException('User with login or password not found');
+    }
+
+    const isPasswordCorrect = await compare(
+      body.password,
+      userByEmail.password,
+    );
+
+    if (!isPasswordCorrect) {
+      throw new NotFoundException('User with login or password not found');
+    }
+
+    delete userByEmail.password;
+
+    return userByEmail;
   }
 
   generateJwt(user: UserEntity): string {
