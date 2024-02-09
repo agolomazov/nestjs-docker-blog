@@ -30,6 +30,20 @@ export class ArticlesService {
     return await this.articleRepository.save(article);
   }
 
+  async findBySlug(slug: string) {
+    return await this.articleRepository.findOne({
+      where: {
+        slug,
+      },
+      select: {
+        title: true,
+        description: true,
+        body: true,
+        tagList: true,
+      },
+    });
+  }
+
   buildArticleResponse(article: ArticleEntity): ArticleResponseInterface {
     return {
       article,
