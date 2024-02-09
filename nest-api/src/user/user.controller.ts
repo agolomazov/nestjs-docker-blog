@@ -14,7 +14,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { UserResponseInterface } from './types/user.response.interface';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
-import { AuthGuard } from './guards/user.guard';
+import { AuthGuard } from './guards/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller()
