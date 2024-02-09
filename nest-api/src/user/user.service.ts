@@ -42,6 +42,14 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
 
+  async findById(id: number) {
+    return this.userRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  }
+
   async login(body: LoginUserDto): Promise<UserEntity> {
     const userByEmail = await this.userRepository.findOne({
       select: {
