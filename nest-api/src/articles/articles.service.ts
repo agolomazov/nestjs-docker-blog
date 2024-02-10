@@ -52,6 +52,10 @@ export class ArticlesService {
   ) {
     const article = await this.findBySlug(slug);
 
+    if (!article) {
+      throw new NotFoundException();
+    }
+
     if (article.author.id !== currentUser) {
       throw new ForbiddenException();
     }
@@ -68,6 +72,10 @@ export class ArticlesService {
 
   async deleteArticle(slug: string, currentUser: number) {
     const article = await this.findBySlug(slug);
+
+    if (!article) {
+      throw new NotFoundException();
+    }
 
     if (article.author.id !== currentUser) {
       throw new ForbiddenException();
