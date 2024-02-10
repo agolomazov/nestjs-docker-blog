@@ -8,6 +8,7 @@ import configuration from './config/configuration';
 import { getDbConfig } from './configs/db.config';
 import { UserModule } from './user/user.module';
 import { AuthMiddleware } from './middlewares/auth.middleware';
+import { ArticlesModule } from './articles/articles.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AuthMiddleware } from './middlewares/auth.middleware';
     }),
     TagsModule,
     UserModule,
+    ArticlesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
