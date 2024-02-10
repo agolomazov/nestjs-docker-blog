@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ArticleResponseInterface } from './types/article.response.interface';
 import slugify from 'slugify';
+import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
 export class ArticlesService {
@@ -41,6 +42,27 @@ export class ArticlesService {
       throw new NotFoundException();
     }
 
+    return article;
+  }
+
+  async updateArticle(
+    slug: string,
+    currentUser: number,
+    updateArticleDto: UpdateArticleDto,
+  ) {
+    const article = await this.findBySlug(slug);
+
+    if (article.author.id !== currentUser) {
+      throw new ForbiddenException();
+    }
+
+    Object.assign(article, updateArticleDto);
+
+    if (updateArticleDto.title) {
+      article.slug = this.getSlug(updateArticleDto.title);
+    }
+
+    await this.articleRepository.update({ slug }, article);
     return article;
   }
 
