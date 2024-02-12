@@ -83,16 +83,10 @@ export class ProfileService {
       throw new BadRequestException('Follower and following cant be equal');
     }
 
-    const follow = await this.followRepository.findOne({
-      where: {
-        followerId: currentUserId,
-        followingId: user.id,
-      },
+    await this.followRepository.delete({
+      followerId: currentUserId,
+      followingId: user.id,
     });
-
-    if (follow) {
-      await this.followRepository.remove(follow);
-    }
 
     return { ...user, following: false };
   }
