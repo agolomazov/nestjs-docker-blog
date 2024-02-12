@@ -31,7 +31,14 @@ export class ProfileService {
       throw new NotFoundException();
     }
 
-    return { ...user, following: false };
+    const follow = await this.followRepository.findOne({
+      where: {
+        followerId: currentUserId,
+        followingId: user.id,
+      },
+    });
+
+    return { ...user, following: Boolean(follow) };
   }
 
   async followProfile(
