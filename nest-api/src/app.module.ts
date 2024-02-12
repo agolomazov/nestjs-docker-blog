@@ -9,6 +9,7 @@ import { getDbConfig } from './configs/db.config';
 import { UserModule } from './user/user.module';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { ArticlesModule } from './articles/articles.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ArticlesModule } from './articles/articles.module';
     TagsModule,
     UserModule,
     ArticlesModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
