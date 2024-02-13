@@ -12,6 +12,7 @@ import { ArticleResponseInterface } from './types/article.response.interface';
 import slugify from 'slugify';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticlesResponseInterface } from './types/articles.response.interface';
+import { FollowEntity } from 'src/profile/follow.entity';
 
 @Injectable()
 export class ArticlesService {
@@ -20,6 +21,8 @@ export class ArticlesService {
     private readonly articleRepository: Repository<ArticleEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(FollowEntity)
+    private readonly followRepository: Repository<FollowEntity>,
   ) {}
 
   async findAll(
@@ -84,6 +87,66 @@ export class ArticlesService {
     }
 
     const articles = await queryBuilder.getMany();
+    const articlesWithFavorites = articles.map((article) => {
+      const favorited = favoriteIds.includes(article.id);
+
+      return { ...article, favorited };
+    });
+
+    return { articles: articlesWithFavorites, articlesCount };
+  }
+
+  async getFeed(
+    currentUserId: number,
+    query: any,
+  ): Promise<ArticlesResponseInterface> {
+    const follows = await this.followRepository.find({
+      where: { followerId: currentUserId },
+      select: ['followingId'],
+    });
+
+    const followingUserIds = follows.map((following) => following.followingId);
+
+    if (followingUserIds.length === 0) {
+      return { articles: [], articlesCount: 0 };
+    }
+
+    const queryBuilder = this.articleRepository
+      .createQueryBuilder('articles')
+      .leftJoinAndSelect('articles.author', 'author');
+
+    queryBuilder.orderBy('articles.createdAt', 'DESC');
+
+    if (query.limit) {
+      queryBuilder.limit(query.limit);
+    }
+
+    if (query.offset) {
+      queryBuilder.offset(query.offset);
+    }
+
+    // Получаем ID статей фаворитов
+    let favoriteIds: number[] = [];
+    if (currentUserId) {
+      const currentUser = await this.userRepository.findOne({
+        where: { id: currentUserId },
+        relations: ['favorites'],
+      });
+      favoriteIds = currentUser.favorites.map((el) => el.id);
+    }
+
+    // Получаем список статей фаворитов
+    queryBuilder.andWhere('articles.authorId IN (:...ids)', {
+      ids: followingUserIds,
+    });
+
+    // Считаем количество всех статей фаворитов
+    const articlesCount = await queryBuilder.getCount();
+
+    // Получаем все статьи фаворитов
+    const articles = await queryBuilder.getMany();
+
+    // Получаем все статьи фаворитов с полем favorited
     const articlesWithFavorites = articles.map((article) => {
       const favorited = favoriteIds.includes(article.id);
 
