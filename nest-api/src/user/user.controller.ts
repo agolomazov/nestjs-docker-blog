@@ -6,23 +6,23 @@ import {
   Put,
   UseGuards,
   UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
+import { BackendValidationPipe } from 'src/shared/pipes/backend.validation.pipe';
 import { User } from './decorators/user.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from './guards/auth.guard';
 import { UserResponseInterface } from './types/user.response.interface';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
-import { AuthGuard } from './guards/auth.guard';
-import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('users')
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new BackendValidationPipe())
   async createUser(
     @Body('user') body: CreateUserDto,
   ): Promise<UserResponseInterface> {
@@ -31,7 +31,7 @@ export class UserController {
   }
 
   @Post('users/login')
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new BackendValidationPipe())
   async login(
     @Body('user') body: LoginUserDto,
   ): Promise<UserResponseInterface> {
@@ -46,7 +46,7 @@ export class UserController {
   }
 
   @Put('user')
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new BackendValidationPipe())
   @UseGuards(AuthGuard)
   async updateUser(
     @User('id') userId: number,
